@@ -21,7 +21,7 @@ export class TestCaseScenariosTableComponent implements OnInit {
   displayedColumns: string[] = ['select', 'id', 'name', 'action']
   scenarios: Scenario[]
   testRun: Run
-
+  next = 0
   @ViewChild(MatTable, { static: true }) table: MatTable<any>
   dataSource = new MatTableDataSource<Scenario>([])
   selection = new SelectionModel<Scenario>(true, []);
@@ -48,6 +48,51 @@ export class TestCaseScenariosTableComponent implements OnInit {
     this.scenarioService.getScenarios().subscribe(scenarios => {
       this.scenarios = scenarios
     })
+  }
+
+  checkAndRunAll(){
+    this.dataSource.data.forEach(row => {
+      this.selection.select(row)
+    });    
+    this.checkAndRun()
+  }  
+
+  checkAndRun(){
+    if(this.selection.selected.length == 0){
+      const dialogRef = this.dialog.open(MessageDialogBoxComponent, {
+        width: '250px',
+        data: { msg: 'Please, first select at least one scenario.' }
+      })
+    } else {
+      this.runSelected(this.selection.selected)
+    }
+  }  
+
+  runSelected(elements) {
+    if (!this.context || this.context == '') {
+      const dialogRef = this.dialog.open(MessageDialogBoxComponent, {
+        width: '250px',
+        data: { msg: 'Please, first provide an environment and a context in the TestCase.' }
+      })
+    } else {
+      this.openRunDialog()
+      this.selectedScenario = elements[this.next]
+      let scenarioId = '' + this.selectedScenario.id
+      let name = this.selectedScenario.name
+      let listOfSteps = this.selectedScenario.listOfSteps
+      let newRun = new Run(name, scenarioId, listOfSteps, '', '', '', '' + this.environmentId, '' + this.contextId)
+      this.runService.run(newRun).subscribe(run => {
+        elements[this.next].result = run.result
+        this.dialogRef.close();
+        newRun.logs = run.logs
+        this.next++
+        if (elements.length > this.next) {
+          this.runSelected(elements)
+        } else {
+          this.next = 0
+        }
+      })
+    }
   }
 
   run(element) {
@@ -120,6 +165,7 @@ export class TestCaseScenariosTableComponent implements OnInit {
     this.table.renderRows();
   }
   deleteRowData(row_obj) {
+    console.log('deleteRowData')
     if (!this.dataSource) {
       this.dataSource.data = []
     } else {

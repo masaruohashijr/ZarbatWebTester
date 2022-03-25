@@ -1,8 +1,8 @@
 <div class="container text-left">
   <div name="masaru" style="text-align: center; width: 100%;">
     <button type="button" class="btn btn-default" (click)="openDialog('Add',{})">Add Scenario</button>
-    <button type="button" class="btn btn-success">Run Selected</button>
-    <button type="button" class="btn btn-success">Run All</button>
+    <button type="button" class="btn btn-success" (click)="checkAndRun()">Run Selected</button>
+    <button type="button" class="btn btn-success" (click)="checkAndRunAll()">Run All</button>
   </div>
   <br>
   <table mat-table [dataSource]="dataSource" #mytable class="my-table mat-elevation-z8">

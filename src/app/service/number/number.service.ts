@@ -10,7 +10,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 })
 export class NumberService {
   httpOptions = {
-    headers: new HttpHeaders({ 
+    headers: new HttpHeaders({
       "Access-Control-Allow-Origin": "*",    
       "Access-Control-Allow-Methods": "DELETE,GET,POST,OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
@@ -18,6 +18,7 @@ export class NumberService {
    })
   };
   private numbersUrl = 'http://localhost:5002/number';
+  private environmentsUrl = 'http://localhost:5002/environment';
 
   constructor(
     private http: HttpClient,
@@ -28,6 +29,14 @@ export class NumberService {
       .pipe(
         catchError(this.handleError<PhoneNumber[]>("getNumbers", []))
       )
+  }
+
+  getNumbersByEnvironmentId(id: number): Observable<PhoneNumber[]> {
+    const url = `${this.environmentsUrl}/${id}/number`;
+    return this.http.get<PhoneNumber[]>(url).pipe(
+      tap(_ => this.log(`fetched number id=${id}`)),
+      catchError(this.handleError<PhoneNumber[]>(`getNumbersByEnvironment id=${id}`))
+    );
   }
 
   addNumber(number: PhoneNumber): Observable<PhoneNumber> {

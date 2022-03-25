@@ -116,23 +116,20 @@ export class RunSingleFormComponent {
   run() {
     console.log(this.tags)
     this.runService.run(this.model).subscribe(run => {
-      console.log("run")
-      this.dialogRef.close()
+      this.dialogRef.close()      
       if (run && run.result === 'PASSED') {
         console.log("PASSED")
         this.passed = true
         this.saveScenarioAndRun()
-      } else {
+      } else {        
         console.log("FAILED")
         this.failed = true
       }
-      console.log("middle")
-      if(this.failed && undefined != this.model){        
+      if(this.failed && undefined == run){        
         this.model.logs += "\n\nService is unreachable."
       }
-      console.log("final")
       this.executed = true      
-    })
+    })    
   }
 
   saveScenarioAndRun() {

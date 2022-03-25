@@ -10,5 +10,4 @@ export class Scenario {
       public position?: string,
       public result?: string,
     ) {  }
-  
   }

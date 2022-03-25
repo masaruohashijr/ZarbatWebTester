@@ -50,7 +50,9 @@ export class ContextFormComponent {
     this.loadPhoneNumbers()
   }
   loadEnvironments(): void {
-    this.environmentService.getEnvironments().subscribe(environments=>this.environments = environments)
+    this.environmentService.getEnvironments().subscribe(environments=>{
+      this.environments = environments
+    })
   }
   loadParameters(): void {
     this.parameterService.getParameters().subscribe(parameters=>this.parameters = parameters)

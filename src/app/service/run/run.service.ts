@@ -8,6 +8,7 @@ import { Arguments } from 'src/app/model/arguments';
 import { MatChipsModule } from '@angular/material/chips';
 import { ContextService } from '../context/context.service';
 import { textChangeRangeIsUnchanged } from 'typescript';
+import { Context } from 'src/app/model/context';
 
 @Injectable({
   providedIn: 'root'
@@ -30,10 +31,6 @@ export class RunService {
     private contextService: ContextService) { }
 
   run(model: Run): Observable<Run> {
-    model.args = new Arguments()    
-    this.contextService.getContext(parseInt(model.contextId)).subscribe(
-      ctx=>model.context = ctx
-    )
     const data = JSON.stringify(model);
     return this.http.post<Run>(this.runSingleUrl, data).pipe(
       tap((newRun: Run) => {

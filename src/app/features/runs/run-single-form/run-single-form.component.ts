@@ -101,13 +101,13 @@ export class RunSingleFormComponent {
   }
   newRun() {
     this.model = new Run(
-      'Play a tone', 
-      '', 
-      'Given my test setup runs \nAnd \"NumberA\" configured to play tone \"5000,10,850\"\nAnd \"NumberB\" configured to record calls for download\nWhen I make a call from \"NumberA\" to \"NumberB\"\nThen \"NumberB\" should be able to listen to frequencies \"850\"\nAnd \"NumberA\" should be reset\nAnd \"NumberB\" should be reset', 'Description', 
+      'Play a tone',
+      '',
+      'Given my test setup runs \nAnd \"NumberA\" configured to play tone \"5000,10,850\"\nAnd \"NumberB\" configured to record calls for download\nWhen I make a call from \"NumberA\" to \"NumberB\"\nThen \"NumberB\" should be able to listen to frequencies \"850\"\nAnd \"NumberA\" should be reset\nAnd \"NumberB\" should be reset', 'Description',
       '',
       '',
-      '1', 
-      '1', 
+      '1',
+      '1',
       '1',
       '',
       '');
@@ -115,21 +115,27 @@ export class RunSingleFormComponent {
   }
   run() {
     console.log(this.tags)
-    this.runService.run(this.model).subscribe(run => {
-      this.dialogRef.close()      
-      if (run && run.result === 'PASSED') {
-        console.log("PASSED")
-        this.passed = true
-        this.saveScenarioAndRun()
-      } else {        
-        console.log("FAILED")
-        this.failed = true
+    this.contextService.getContext(parseInt(this.model.contextId)).subscribe(
+      ctx => {
+        this.model.context = ctx
+        alert(ctx)
+        this.runService.run(this.model).subscribe(run => {
+          this.dialogRef.close()
+          if (run && run.result === 'PASSED') {
+            console.log("PASSED")
+            this.passed = true
+            this.saveScenarioAndRun()
+          } else {
+            console.log("FAILED")
+            this.failed = true
+          }
+          if (this.failed && undefined == run) {
+            this.model.logs += "\n\nService is unreachable."
+          }
+          this.executed = true
+        })
       }
-      if(this.failed && undefined == run){        
-        this.model.logs += "\n\nService is unreachable."
-      }
-      this.executed = true      
-    })    
+    )
   }
 
   saveScenarioAndRun() {
